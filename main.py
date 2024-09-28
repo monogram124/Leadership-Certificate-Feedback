@@ -26,7 +26,7 @@ def start(message):
 
     markup.add(btn1, btn2)
 
-    bot.send_message(message.chat.id, f"{message.from_user.first_name}, добро пожаловать в бота обратной связи! ❗Чтобы отправить ответы, написанные от руки необходимо нажать кнопку 'Готово'", reply_markup=markup)
+    bot.send_message(message.chat.id, f"{message.from_user.first_name}, добро пожаловать в бота обратной связи! Чтобы отправить ответы, написанные от руки необходимо нажать кнопку 'Готово'", reply_markup=markup)
 
     bot.register_next_step_handler(message, on_click)
 
