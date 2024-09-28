@@ -73,7 +73,7 @@ def on_click(message):
         cur.close()
         conn.close() 
 
-        print(user_form)
+        # print(user_form)
         user_form[message.chat.id] = {"skills": ""}
 
         markup = types.ReplyKeyboardMarkup()
@@ -95,7 +95,7 @@ def on_click(message):
     
 def user_name(message):
     user_form[message.chat.id]['name'] = message.text
-    print(user_form)
+    # print(user_form)
 
 @bot.callback_query_handler(func=lambda callback: True)
 def callback_message(callback):
@@ -106,7 +106,7 @@ def callback_message(callback):
 
     if callback.data in house:
         user_form[callback.message.chat.id]['house'] = callback.data
-        print(user_form)
+        # print(user_form)
 
         btn1 = types.InlineKeyboardButton("Опыт публичного выступления", callback_data="Опыт публичного выступления")
         btn2 = types.InlineKeyboardButton("Социальный опыт", callback_data="Социальный опыт")
@@ -128,7 +128,7 @@ def callback_message(callback):
 
     if callback.data in exp:
         user_form[callback.message.chat.id]['exp'] = callback.data
-        print(user_form)
+        # print(user_form)
 
         btn1 = types.InlineKeyboardButton("5", callback_data="5")
         btn2 = types.InlineKeyboardButton("10", callback_data="10")
@@ -140,7 +140,7 @@ def callback_message(callback):
 
     if callback.data == "5":
         user_form[callback.message.chat.id]['points'] = callback.data
-        print(user_form)
+        # print(user_form)
 
         markup = types.ReplyKeyboardMarkup()
         rdy_btn = types.KeyboardButton("✅Готово")
@@ -171,7 +171,7 @@ def callback_message(callback):
 
     if callback.data in btns:
         user_form[callback.message.chat.id]["skills"] += callback_text_skills[callback.data]
-        print(user_form)
+        # print(user_form)
         
     if callback.data == "✅Готово":
         markup = types.InlineKeyboardMarkup()
@@ -213,7 +213,7 @@ def callback_message(callback):
         else:
             user_form[callback.message.chat.id]['team_work'] = callback_text_team[callback.data]
         
-        print(user_form)
+        # print(user_form)
 
         markup = types.InlineKeyboardMarkup()
         btn1 = types.InlineKeyboardButton("👎1", callback_data="1rate")
@@ -250,7 +250,7 @@ def callback_message(callback):
         }
 
         user_form[callback.message.chat.id]['result'] = callback_text_rates[callback.data]
-        print(user_form)
+        # print(user_form)
         
         markup = types.ReplyKeyboardMarkup()
         send = types.KeyboardButton("📩Отправить")
@@ -264,7 +264,7 @@ def callback_message(callback):
     
     if callback.data == "10":
         user_form[callback.message.chat.id]['points'] = callback.data
-        print(user_form)
+        # print(user_form)
         
         markup = types.ReplyKeyboardMarkup()
         rdy_btn = types.KeyboardButton("✅Готово")
@@ -277,7 +277,7 @@ def callback_message(callback):
 
     if callback.data == "15":
         user_form[callback.message.chat.id]['points'] = callback.data
-        print(user_form)
+        # print(user_form)
 
         markup = types.ReplyKeyboardMarkup()
         rdy_btn = types.KeyboardButton("✅Готово")
@@ -300,7 +300,7 @@ def wrap(param, on_click):
     @bot.message_handler()
     def mid_on_click(message):
         user_form[message.chat.id][param] = message.text
-        print(user_form)
+        # print(user_form)
         
         if message.text != "":
             bot.register_next_step_handler(message, on_click)
