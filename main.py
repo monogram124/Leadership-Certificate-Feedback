@@ -15,7 +15,7 @@ def start(message):
     conn = sqlite3.connect("feed_bot.sql")
     cur = conn.cursor()
 
-    cur.execute("CREATE TABLE IF NOT EXISTS users (id INT AUTO_INCREMENT PRIMARY KEY, name varchar(50), house varchar(50), exp varchar(50), points int(5), done varchar(50), skills varchar(170), repeat varchar(3), exactly varchar(50), difficulties varchar(50), team_work varchar(50), motivation varchar(50), moment varchar(50), result varchar(2))")
+    cur.execute("CREATE TABLE IF NOT EXISTS users (id INT AUTO_INCREMENT PRIMARY KEY, name varchar(50), house varchar(50), exp varchar(50), points int, done varchar(50), skills varchar(170), repeat varchar(3), exactly varchar(50), difficulties varchar(50), team_work varchar(50), motivation varchar(50), moment varchar(50), result int)")
     conn.commit()
     cur.close() 
     conn.close()
@@ -26,7 +26,7 @@ def start(message):
 
     markup.add(btn1, btn2)
 
-    bot.send_message(message.chat.id, f"{message.from_user.first_name}, добро пожаловать в бота обратной связи! Чтобы отправить ответы, написанные от руки необходимо нажать кнопку 'Готово'", reply_markup=markup)
+    bot.send_message(message.chat.id, f"{message.from_user.first_name}, добро пожаловать в бота обратной связи! ❗Чтобы отправить ответы, написанные от руки необходимо нажать кнопку 'Готово'", reply_markup=markup)
 
     bot.register_next_step_handler(message, on_click)
 
@@ -52,6 +52,8 @@ def on_click(message):
 
         markup.add(btn1, btn2)
 
+        user_form[message.chat.id] = {"skills": ""}
+
         bot.send_message(message.chat.id, f"{message.from_user.first_name}, добро пожаловать в бота обратной связи!", reply_markup=markup)
     
     if message.text == "📩Отправить":
@@ -59,11 +61,11 @@ def on_click(message):
         cur = conn.cursor()
         
         if user_form[message.chat.id]["points"] == "5":
-            cur.execute(f"INSERT INTO users (name, house, exp, points, done, skills, repeat, result) VALUES ('{user_form[message.chat.id]['name']}', '{user_form[message.chat.id]['house']}', '{user_form[message.chat.id]['exp']}', '{user_form[message.chat.id]['points']}', '{user_form[message.chat.id]['done']}', '{user_form[message.chat.id]['skills'][0:len(user_form[message.chat.id]['skills']) - 2]}', '{user_form[message.chat.id]['repeat']}', '{user_form[message.chat.id]['result']}')")
+            cur.execute(f"INSERT INTO users (name, house, exp, points, done, skills, repeat, result) VALUES ('{user_form[message.chat.id]['name']}', '{user_form[message.chat.id]['house']}', '{user_form[message.chat.id]['exp']}', '{int(user_form[message.chat.id]['points'])}', '{user_form[message.chat.id]['done']}', '{user_form[message.chat.id]['skills'][0:len(user_form[message.chat.id]['skills']) - 2]}', '{user_form[message.chat.id]['repeat']}', '{int(user_form[message.chat.id]['result'])}')")
         elif user_form[message.chat.id]["points"] == "10":
-            cur.execute(f"INSERT INTO users (name, house, exp, points, done, skills, exactly, difficulties, team_work, result) VALUES ('{user_form[message.chat.id]['name']}', '{user_form[message.chat.id]['house']}', '{user_form[message.chat.id]['exp']}', '{user_form[message.chat.id]['points']}', '{user_form[message.chat.id]['done']}', '{user_form[message.chat.id]['skills'][0:len(user_form[message.chat.id]['skills']) - 2]}', '{user_form[message.chat.id]['exactly']}', '{user_form[message.chat.id]['difficulties']}', '{user_form[message.chat.id]['team_work']}', '{user_form[message.chat.id]['result']}')")
+            cur.execute(f"INSERT INTO users (name, house, exp, points, done, skills, exactly, difficulties, team_work, result) VALUES ('{user_form[message.chat.id]['name']}', '{user_form[message.chat.id]['house']}', '{user_form[message.chat.id]['exp']}', '{int(user_form[message.chat.id]['points'])}', '{user_form[message.chat.id]['done']}', '{user_form[message.chat.id]['skills'][0:len(user_form[message.chat.id]['skills']) - 2]}', '{user_form[message.chat.id]['exactly']}', '{user_form[message.chat.id]['difficulties']}', '{user_form[message.chat.id]['team_work']}', '{int(user_form[message.chat.id]['result'])}')")
         elif user_form[message.chat.id]["points"] == "15":
-            cur.execute(f"INSERT INTO users (name, house, exp, points, done, skills, exactly, difficulties, team_work, motivation, moment, result) VALUES ('{user_form[message.chat.id]['name']}', '{user_form[message.chat.id]['house']}', '{user_form[message.chat.id]['exp']}', '{user_form[message.chat.id]['points']}', '{user_form[message.chat.id]['done']}', '{user_form[message.chat.id]['skills'][0:len(user_form[message.chat.id]['skills']) - 2]}', '{user_form[message.chat.id]['exactly']}', '{user_form[message.chat.id]['difficulties']}', '{user_form[message.chat.id]['team_work']}', '{user_form[message.chat.id]['motivation']}', '{user_form[message.chat.id]['moment']}', '{user_form[message.chat.id]['result']}')")
+            cur.execute(f"INSERT INTO users (name, house, exp, points, done, skills, exactly, difficulties, team_work, motivation, moment, result) VALUES ('{user_form[message.chat.id]['name']}', '{user_form[message.chat.id]['house']}', '{user_form[message.chat.id]['exp']}', '{int(user_form[message.chat.id]['points'])}', '{user_form[message.chat.id]['done']}', '{user_form[message.chat.id]['skills'][0:len(user_form[message.chat.id]['skills']) - 2]}', '{user_form[message.chat.id]['exactly']}', '{user_form[message.chat.id]['difficulties']}', '{user_form[message.chat.id]['team_work']}', '{user_form[message.chat.id]['motivation']}', '{user_form[message.chat.id]['moment']}', '{int(user_form[message.chat.id]['result'])}')")
         
         # print(user_form[message.chat.id]['skills'][0:len(user_form[message.chat.id]['skills']) - 2])
         
@@ -82,17 +84,21 @@ def on_click(message):
 
         bot.send_message(message.chat.id, "Форма успешно отправлена!", reply_markup=markup)
 
-    if message.text == "✅Готово" and message.text != "":
+    if message.text == "✅Готово" and message.text != "" and not "house" in user_form[message.chat.id].keys():
         markup.row(btn1, btn2, btn3, btn4)
         bot.send_message(message.chat.id, "Выберите House", reply_markup=markup)
+    elif message.text == "✅Готово" and message.text != "" and "house" in user_form[message.chat.id].keys():
+        bot.send_message(message.chat.id, "❗Упс, не та кнопка")
 
+    if message.text == "🌐Сайт House System":
+        bot.send_message(message.chat.id, "https://houses.primakov.school/")
+    
 def user_name(message):
     user_form[message.chat.id]['name'] = message.text
     print(user_form)
 
 @bot.callback_query_handler(func=lambda callback: True)
 def callback_message(callback):
-
     markup = types.InlineKeyboardMarkup()
     
     house = ["east", "west", "north", "south"]
