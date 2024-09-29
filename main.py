@@ -15,7 +15,7 @@ def start(message):
     conn = sqlite3.connect("feed_bot.sql")
     cur = conn.cursor()
 
-    cur.execute("CREATE TABLE IF NOT EXISTS users (id INT AUTO_INCREMENT PRIMARY KEY, name varchar(50), house varchar(50), exp varchar(50), points int, done varchar(50), skills varchar(170), repeat varchar(3), exactly varchar(50), difficulties varchar(50), team_work varchar(50), motivation varchar(50), moment varchar(50), result int)")
+    cur.execute("CREATE TABLE IF NOT EXISTS users (name varchar(50), house varchar(20), exp varchar(50), points int, done varchar(50), skills varchar(170), repeat varchar(3), exactly varchar(200), difficulties varchar(150), team_work varchar(50), motivation varchar(150), moment varchar(150), result int)")
     conn.commit()
     cur.close() 
     conn.close()
@@ -195,15 +195,15 @@ def callback_message(callback):
     
     if callback.data == "Да" or callback.data == "Нет" or callback.data in team_work or callback.data in team_work_15:
         callback_text_team_15 = {
-            "удалась-15": "удалась",
-            "не-удалась-15": "не удалась",
-            "не-относиться-15": "не относится"
+            "удалась-15": "Работа в команде удалась",
+            "не-удалась-15": "Работа в команде не удалась",
+            "не-относится-15": "Работа в команде к этому опыту не относится"
         }
 
         callback_text_team = {
-            "удалась": "удалась",
-            "не-удалась": "не удалась",
-            "не-относится": "не относится"
+            "удалась": "Работа в команде удалась",
+            "не-удалась": "Работа в команде не удалась",
+            "не-относится": "Работа в команде к этому опыту не относится"
         }
 
         if callback.data == "Да" or callback.data == "Нет":
