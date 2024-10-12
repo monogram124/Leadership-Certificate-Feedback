@@ -1,8 +1,13 @@
 import telebot
 from telebot import types
-import sqlite3
+
 from dotenv import load_dotenv
 import os
+
+import sqlite3
+from database import Database
+
+db = Database()
 
 load_dotenv()
 bot = telebot.TeleBot(os.getenv("TOKEN"))
@@ -11,14 +16,9 @@ user_form = {}
 
 @bot.message_handler(commands=["start"])
 def start(message):
-    user_form[message.chat.id] = {"skills": ""}
-    conn = sqlite3.connect("feed_bot.sql")
-    cur = conn.cursor()
+    db.create()
 
-    cur.execute("CREATE TABLE IF NOT EXISTS users (name varchar(50), house varchar(20), exp varchar(50), points int, done varchar(50), skills varchar(170), repeat varchar(3), exactly varchar(200), difficulties varchar(150), team_work varchar(50), motivation varchar(150), moment varchar(150), result int)")
-    conn.commit()
-    cur.close() 
-    conn.close()
+    user_form[message.chat.id] = {"skills": ""}
 
     markup = types.ReplyKeyboardMarkup()
     btn1 = types.KeyboardButton("✏️Заполнить форму")
@@ -57,23 +57,10 @@ def on_click(message):
         bot.send_message(message.chat.id, f"{message.from_user.first_name}, добро пожаловать в бота обратной связи!", reply_markup=markup)
     
     if message.text == "📩Отправить":
-        conn = sqlite3.connect("feed_bot.sql")
-        cur = conn.cursor()
+        db.save_message(message, user_form)
         
-        if user_form[message.chat.id]["points"] == "5":
-            cur.execute(f"INSERT INTO users (name, house, exp, points, done, skills, repeat, result) VALUES ('{user_form[message.chat.id]['name']}', '{user_form[message.chat.id]['house']}', '{user_form[message.chat.id]['exp']}', '{int(user_form[message.chat.id]['points'])}', '{user_form[message.chat.id]['done']}', '{user_form[message.chat.id]['skills'][0:len(user_form[message.chat.id]['skills']) - 2]}', '{user_form[message.chat.id]['repeat']}', '{int(user_form[message.chat.id]['result'])}')")
-        elif user_form[message.chat.id]["points"] == "10":
-            cur.execute(f"INSERT INTO users (name, house, exp, points, done, skills, exactly, difficulties, team_work, result) VALUES ('{user_form[message.chat.id]['name']}', '{user_form[message.chat.id]['house']}', '{user_form[message.chat.id]['exp']}', '{int(user_form[message.chat.id]['points'])}', '{user_form[message.chat.id]['done']}', '{user_form[message.chat.id]['skills'][0:len(user_form[message.chat.id]['skills']) - 2]}', '{user_form[message.chat.id]['exactly']}', '{user_form[message.chat.id]['difficulties']}', '{user_form[message.chat.id]['team_work']}', '{int(user_form[message.chat.id]['result'])}')")
-        elif user_form[message.chat.id]["points"] == "15":
-            cur.execute(f"INSERT INTO users (name, house, exp, points, done, skills, exactly, difficulties, team_work, motivation, moment, result) VALUES ('{user_form[message.chat.id]['name']}', '{user_form[message.chat.id]['house']}', '{user_form[message.chat.id]['exp']}', '{int(user_form[message.chat.id]['points'])}', '{user_form[message.chat.id]['done']}', '{user_form[message.chat.id]['skills'][0:len(user_form[message.chat.id]['skills']) - 2]}', '{user_form[message.chat.id]['exactly']}', '{user_form[message.chat.id]['difficulties']}', '{user_form[message.chat.id]['team_work']}', '{user_form[message.chat.id]['motivation']}', '{user_form[message.chat.id]['moment']}', '{int(user_form[message.chat.id]['result'])}')")
-        
-        # print(user_form[message.chat.id]['skills'][0:len(user_form[message.chat.id]['skills']) - 2])
-        
-        conn.commit()
-        cur.close()
-        conn.close() 
-
         # print(user_form)
+
         user_form[message.chat.id] = {"skills": ""}
 
         markup = types.ReplyKeyboardMarkup()
