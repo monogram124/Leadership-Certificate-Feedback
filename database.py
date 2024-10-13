@@ -1,4 +1,7 @@
 import sqlite3
+import httplib2
+from oauth2client.service_account import ServiceAccountCredentials
+import pprint
 
 class Database:
     def create(self):
@@ -29,6 +32,15 @@ class Database:
         
         self.conn.commit()
         self.conn.close()
+
+    def export_into_sheets(self):
+        self.conn = sqlite3.connect("telegram_messages.db")
+        self.cur = self.conn.cursor()
+
+        CREDENTIALS_FILE = "creds.json"
+        spreadsheet_id = "1cYmF3OwCvLKR40iP72EA8nMBs0Yuzn6RnxMpa4d3sgM"
+
+        # TODO: прописать метод для того чтобы забирать данные из бд и перенаправлять их в google sheets
 
     def save_message(self, message, user_form):
         self.conn = sqlite3.connect("telegram_messages.db")
