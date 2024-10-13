@@ -14,6 +14,10 @@ bot = telebot.TeleBot(os.getenv("TOKEN"))
 
 user_form = {}
 
+@bot.message_handler(commands=["export"])
+def exporting(message):
+    db.export_into_sheets()
+
 @bot.message_handler(commands=["start"])
 def start(message):
     db.create()
