@@ -16,6 +16,10 @@ user_form = {}
 
 # TODO: timestamp GMT+3, чтобы skills не было пустым
 
+@bot.message_handler(commands=["test"])
+def testing(message):
+    print(user_form)
+
 @bot.message_handler(commands=["export"])
 def exporting(message):
     if message.chat.id == int(os.getenv("ADMIN1_ID")) or message.chat.id == int(os.getenv("ADMIN2_ID")):
@@ -135,7 +139,6 @@ def callback_message(callback):
 
     if callback.data == "5":
         user_form[callback.message.chat.id]['points'] = callback.data
-        # print(user_form)
 
         markup = types.ReplyKeyboardMarkup()
         rdy_btn = types.KeyboardButton("✅Готово")
@@ -164,19 +167,21 @@ def callback_message(callback):
         "Эффективность": "Верить в собственную эффективность, "
     }
 
-    if callback.data in btns:
+    if callback.data in btns and callback_text_skills[callback.data] not in user_form[callback.message.chat.id]["skills"]:
         user_form[callback.message.chat.id]["skills"] += callback_text_skills[callback.data]
-        # print(user_form)
         
-    if callback.data == "✅Готово":
+    if callback.data == "✅Готово" and user_form[callback.message.chat.id]["skills"] != "":
         markup = types.InlineKeyboardMarkup()
         yes = types.InlineKeyboardButton("Да", callback_data="Да")
         no = types.InlineKeyboardButton("Нет", callback_data="Нет")
         markup.row(yes, no)
 
         bot.send_message(callback.message.chat.id, f"Хотел бы ты повторить этот опыт/посоветовать его другу?", reply_markup=markup)
-        
-    if callback.data == "✅Готов":
+    
+    if callback.data == "✅Готово" and user_form[callback.message.chat.id]["skills"] == "":
+        bot.send_message(callback.message.chat.id, "❗️Выбери скиллы, которые прокачал")
+
+    if callback.data == "✅Готов" and user_form[callback.message.chat.id]["skills"] != "":
         markup = types.ReplyKeyboardMarkup()
         btn1 = types.KeyboardButton("✅Готово")
 
@@ -184,6 +189,21 @@ def callback_message(callback):
 
         bot.send_message(callback.message.chat.id, "Как именно ты прокачал выбранный скил (или скилы)?", reply_markup=markup)
         bot.register_next_step_handler(callback.message, wrap('exactly', on_click10_skills))
+    
+    if callback.data == "✅Готов" and user_form[callback.message.chat.id]["skills"] == "":
+        bot.send_message(callback.message.chat.id, "❗️Выбери скиллы, которые прокачал")
+
+    if callback.data == "✅Я готов" and user_form[callback.message.chat.id]["skills"] != "":
+        markup = types.ReplyKeyboardMarkup()
+        rdy_btn = types.KeyboardButton("✅Готово")
+        
+        markup.add(rdy_btn)
+        bot.send_message(callback.message.chat.id, "Как именно ты прокачал выбранный скил (или скилы)?", reply_markup=markup)
+
+        bot.register_next_step_handler(callback.message, wrap('exactly', on_click15_skills))
+    
+    if callback.data == "✅Я готов" and user_form[callback.message.chat.id]["skills"] == "":
+        bot.send_message(callback.message.chat.id, "❗️Выбери скиллы, которые прокачал")
 
     team_work = ["удалась", "не-удалась", "не-относится"]
     team_work_15 = ["удалась-15", "не-удалась-15", "не-относится-15"]
@@ -276,20 +296,13 @@ def callback_message(callback):
 
         markup = types.ReplyKeyboardMarkup()
         rdy_btn = types.KeyboardButton("✅Готово")
-
+        
         markup.add(rdy_btn)
         bot.send_message(callback.message.chat.id, "Что именно ты сделал?", reply_markup=markup)
 
         bot.register_next_step_handler(callback.message, wrap('done', wrap_on_click("15")))
 
-    if callback.data == "✅Я готов":
-        markup = types.ReplyKeyboardMarkup()
-        rdy_btn = types.KeyboardButton("✅Готово")
-
-        markup.add(rdy_btn)
-        bot.send_message(callback.message.chat.id, "Как именно ты прокачал выбранный скил (или скилы)?", reply_markup=markup)
-
-        bot.register_next_step_handler(callback.message, wrap('exactly', on_click15_skills))
+    
 
 def wrap(param, on_click):
     @bot.message_handler()
