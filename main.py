@@ -14,15 +14,18 @@ bot = telebot.TeleBot(os.getenv("TOKEN"))
 
 user_form = {}
 
+# TODO: timestamp GMT+3, чтобы skills не было пустым
+
 @bot.message_handler(commands=["export"])
 def exporting(message):
-    db.export_into_sheets()
+    if message.chat.id == int(os.getenv("ADMIN1_ID")) or message.chat.id == int(os.getenv("ADMIN2_ID")):
+        db.export_into_sheets()
 
 @bot.message_handler(commands=["start"])
 def start(message):
-    db.create()
-
     user_form[message.chat.id] = {"skills": ""}
+
+    db.create()
 
     markup = types.ReplyKeyboardMarkup()
     btn1 = types.KeyboardButton("✏️Заполнить форму")
@@ -43,8 +46,10 @@ def on_click(message):
     btn4 = types.InlineKeyboardButton("🐻‍❄️N", callback_data="north")
     
     if message.text == "✏️Заполнить форму":
+        user_form[message.chat.id] = {"skills": ""}
+        
         markup = types.ReplyKeyboardMarkup()
-        markup.add(types.KeyboardButton("✅Готово"))
+        markup.row(types.KeyboardButton("✅Готово"), types.KeyboardButton("🙅‍♂️Отменить"))
         
         bot.send_message(message.chat.id, "Имя Фамилия", reply_markup=markup)
         bot.register_next_step_handler(message, user_name)
@@ -55,11 +60,10 @@ def on_click(message):
         btn2 = types.KeyboardButton("🌐Сайт House System")
 
         markup.add(btn1, btn2)
-
         user_form[message.chat.id] = {"skills": ""}
 
         bot.send_message(message.chat.id, f"{message.from_user.first_name}, добро пожаловать в бота обратной связи!", reply_markup=markup)
-    
+
     if message.text == "📩Отправить":
         db.save_message(message, user_form)
         
@@ -80,7 +84,7 @@ def on_click(message):
         bot.send_message(message.chat.id, "Выберите House", reply_markup=markup)
     elif message.text == "✅Готово" and message.text != "" and "house" in user_form[message.chat.id].keys():
         bot.send_message(message.chat.id, "❗Упс, не та кнопка")
-
+    
     if message.text == "🌐Сайт House System":
         bot.send_message(message.chat.id, "https://houses.primakov.school/")
     

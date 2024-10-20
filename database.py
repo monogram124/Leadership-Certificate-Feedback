@@ -1,7 +1,13 @@
 import sqlite3
+
 import httplib2
 from oauth2client.service_account import ServiceAccountCredentials
-import pprint
+import googleapiclient.discovery
+
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 class Database:
     def create(self):
@@ -36,11 +42,61 @@ class Database:
     def export_into_sheets(self):
         self.conn = sqlite3.connect("telegram_messages.db")
         self.cur = self.conn.cursor()
-
+        
         CREDENTIALS_FILE = "creds.json"
-        spreadsheet_id = "1cYmF3OwCvLKR40iP72EA8nMBs0Yuzn6RnxMpa4d3sgM"
+        spreadsheet_id = os.getenv("SHEETS_ID")
+        
+        credentials = ServiceAccountCredentials.from_json_keyfile_name(
+            CREDENTIALS_FILE,
+            ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
+        )
+        httpAuth = credentials.authorize(httplib2.Http())
+        service = googleapiclient.discovery.build('sheets', 'v4', http=httpAuth)
 
-        # TODO: прописать метод для того чтобы забирать данные из бд и перенаправлять их в google sheets
+        result = service.spreadsheets().values().get(
+            spreadsheetId=spreadsheet_id,
+            range="A:A"  
+        ).execute()
+
+        sheet_data = result.get('values', [])
+
+      
+        if len(sheet_data) > 1:
+            last_exported_id = int(sheet_data[-1][0])  
+        else:
+            last_exported_id = 0  
+
+        self.cur.execute("SELECT * FROM messages WHERE id > ?", (last_exported_id,))
+        new_rows = self.cur.fetchall() 
+
+        self.conn.close()
+
+        if not new_rows: # в случае если нет чего выгружать
+            return
+        
+        values = []
+        for row in new_rows:
+            values.append(list(row))  
+        
+        current_rows = len(sheet_data) 
+
+        body = {
+            "valueInputOption": "USER_ENTERED",
+            "data": [
+                {
+                    "range": f"A{current_rows + 1}",  
+                    "majorDimension": "ROWS",
+                    "values": values  
+                }
+            ]
+        }
+
+        response = service.spreadsheets().values().batchUpdate(
+            spreadsheetId=spreadsheet_id,
+            body=body
+        ).execute()
+
+        print(f"{response.get('totalUpdatedCells')} cells updated.")
 
     def save_message(self, message, user_form):
         self.conn = sqlite3.connect("telegram_messages.db")
