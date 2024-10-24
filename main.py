@@ -53,12 +53,12 @@ def on_click(message):
         user_form[message.chat.id] = {"skills": ""}
         
         markup = types.ReplyKeyboardMarkup()
-        markup.row(types.KeyboardButton("✅Готово"), types.KeyboardButton("🙅‍♂️Отменить"))
+        markup.row(types.KeyboardButton("✅Готово"), types.KeyboardButton("🔙Назад"))
         
         bot.send_message(message.chat.id, "Имя Фамилия", reply_markup=markup)
         bot.register_next_step_handler(message, user_name)
     
-    if message.text == "🙅‍♂️Отменить":
+    if message.text == "🔙Назад":
         markup = types.ReplyKeyboardMarkup()
         btn1 = types.KeyboardButton("✏️Заполнить форму")
         btn2 = types.KeyboardButton("🌐Сайт House System")
@@ -269,7 +269,7 @@ def callback_message(callback):
         
         markup = types.ReplyKeyboardMarkup()
         send = types.KeyboardButton("📩Отправить")
-        cancel = types.KeyboardButton("🙅‍♂️Отменить")
+        cancel = types.KeyboardButton("🔙Назад")
         
         markup.row(send, cancel)
 
