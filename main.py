@@ -18,7 +18,9 @@ user_form = {}
 
 @bot.message_handler(commands=["test"])
 def testing(message):
-    print(user_form)
+    db.create()
+
+
 
 @bot.message_handler(commands=["export"])
 def exporting(message):
@@ -65,9 +67,9 @@ def on_click(message):
         bot.send_message(message.chat.id, f"{message.from_user.first_name}, добро пожаловать в бота обратной связи!", reply_markup=markup)
 
     if message.text == "📩Отправить":
-        db.save_message(message, user_form)
-        
         print(user_form)
+        
+        db.save_message(message, user_form)
 
         user_form[message.chat.id] = {"skills": ""}
 
@@ -282,9 +284,6 @@ def callback_message(callback):
 
         bot.register_next_step_handler(callback.message, wrap_on_click("15"))
 
-    
-
-
 @bot.message_handler()
 def on_click15_skills(message):
     user_form[message.chat.id]['exactly'] = message.text
@@ -295,7 +294,6 @@ def on_click15_skills(message):
 @bot.message_handler()
 def on_click15_difficult(message):
     user_form[message.chat.id]['difficulties'] = message.text
-        
 
     bot.send_message(message.chat.id, "Что стало мотивацией для реализации опыта?")
     bot.register_next_step_handler(message, on_click15_motivation)
@@ -303,7 +301,6 @@ def on_click15_difficult(message):
 @bot.message_handler()
 def on_click15_motivation(message):
     user_form[message.chat.id]['motivation'] = message.text
-       
         
     bot.send_message(message.chat.id, "Опиши свой самый успешный момент в работе")
     bot.register_next_step_handler(message, on_click15_success)
