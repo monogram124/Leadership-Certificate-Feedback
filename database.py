@@ -1,5 +1,8 @@
 import mysql.connector
 
+from datetime import datetime
+import pytz
+
 import httplib2
 from oauth2client.service_account import ServiceAccountCredentials
 import googleapiclient.discovery
@@ -38,7 +41,8 @@ class Database:
                 team VARCHAR(255),
                 motivation VARCHAR(255),
                 moment VARCHAR(255),
-                result INT
+                result INT,
+                timestamp VARCHAR(255)
             );
             ''')
             
@@ -112,6 +116,9 @@ class Database:
         self.conn.close()
 
     def save_message(self, message, user_form):
+        self.moscow_tz = pytz.timezone("Europe/Moscow")
+        self.timestamp = datetime.now(self.moscow_tz).strftime("%d-%m-%Y %H:%M:%S")
+
         self.conn = mysql.connector.connect(
             host="localhost",
             user="root",
@@ -124,8 +131,8 @@ class Database:
 
         if user_form[message.chat.id]["points"] == "5":
             self.cur.execute('''
-                INSERT INTO messages (user_id, username, name, house, exp, points, done, skills, `repeat`, result)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                INSERT INTO messages (user_id, username, name, house, exp, points, done, skills, `repeat`, result, timestamp)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             ''', (
                 message.chat.id, 
                 message.from_user.first_name,
@@ -136,15 +143,16 @@ class Database:
                 user_form[message.chat.id]['done'],
                 user_form[message.chat.id]['skills'][0:len(user_form[message.chat.id]['skills']) - 2], 
                 user_form[message.chat.id]['repeat'], 
-                int(user_form[message.chat.id]['result'])
+                int(user_form[message.chat.id]['result']),
+                self.timestamp
             ))     
 
             self.conn.commit() 
 
         elif user_form[message.chat.id]["points"] == "10":
             self.cur.execute('''
-                INSERT INTO messages (user_id, username, name, house, exp, points, done, skills, exactly, difficulties, team, result)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                INSERT INTO messages (user_id, username, name, house, exp, points, done, skills, exactly, difficulties, team, result, timestamp)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             ''', (
                 message.chat.id, 
                 message.from_user.first_name,
@@ -157,15 +165,16 @@ class Database:
                 user_form[message.chat.id]['exactly'], 
                 user_form[message.chat.id]['difficulties'], 
                 user_form[message.chat.id]['team_work'], 
-                int(user_form[message.chat.id]['result'])
+                int(user_form[message.chat.id]['result']),
+                self.timestamp
             ))
 
             self.conn.commit() 
 
         elif user_form[message.chat.id]["points"] == "15":
             self.cur.execute('''
-            INSERT INTO messages (user_id, username, name, house, exp, points, done, skills, exactly, difficulties, team, motivation, moment, result)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO messages (user_id, username, name, house, exp, points, done, skills, exactly, difficulties, team, motivation, moment, result, timestamp)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             ''', (
                 message.chat.id, 
                 message.from_user.first_name,
@@ -180,7 +189,8 @@ class Database:
                 user_form[message.chat.id]['team_work'], 
                 user_form[message.chat.id]['motivation'], 
                 user_form[message.chat.id]['moment'], 
-                int(user_form[message.chat.id]['result'])
+                int(user_form[message.chat.id]['result']),
+                self.timestamp
             ))
             
             self.conn.commit() 
