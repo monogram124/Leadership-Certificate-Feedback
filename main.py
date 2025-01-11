@@ -30,7 +30,21 @@ def handle_back(func):
             btn2 = types.KeyboardButton("🌐Сайт House System")
 
             markup.add(btn1, btn2)
-            user_form[message.chat.id] = {"skills": ""}
+            user_form[message.chat.id] = {"skills": [], "skills_dict":{
+                                    "Мыслить": False,
+                                    "Коммуницировать": False,
+                                    "Уметь-рисковать": False,
+                                    "Быть-гибким": False,
+                                    "Быть-упорным": False,
+                                    "Командная-работа": False,
+                                    "Уметь-планировать": False,
+                                    "Глобальное-мышление": False,
+                                    "Этические-нормы": False,
+                                    "Принимать-решения": False,
+                                    "Ответственность-решение": False,
+                                    "Сильные-стороны": False,
+                                    "Эффективность": False
+            }}
 
             photo = open('pic/welcome.png', 'rb')
             bot.send_photo(message.chat.id, photo, caption=f"{message.from_user.first_name}, приветствуем тебя в боте по обработке обратной связи!", reply_markup=markup)
@@ -40,7 +54,21 @@ def handle_back(func):
 
 @bot.message_handler(commands=["start"])
 def start(message):
-    user_form[message.chat.id] = {"skills": ""}
+    user_form[message.chat.id] = {"skills": [], "skills_dict":{
+                                    "Мыслить": False,
+                                    "Коммуницировать": False,
+                                    "Уметь-рисковать": False,
+                                    "Быть-гибким": False,
+                                    "Быть-упорным": False,
+                                    "Командная-работа": False,
+                                    "Уметь-планировать": False,
+                                    "Глобальное-мышление": False,
+                                    "Этические-нормы": False,
+                                    "Принимать-решения": False,
+                                    "Ответственность-решение": False,
+                                    "Сильные-стороны": False,
+                                    "Эффективность": False
+    }}
 
     db.create()
 
@@ -59,7 +87,21 @@ def start(message):
 @handle_back
 def on_click(message):
     if message.text == "✏️Заполнить форму":
-        user_form[message.chat.id] = {"skills": ""}
+        user_form[message.chat.id] = {"skills": [], "skills_dict":{
+                                    "Мыслить": False,
+                                    "Коммуницировать": False,
+                                    "Уметь-рисковать": False,
+                                    "Быть-гибким": False,
+                                    "Быть-упорным": False,
+                                    "Командная-работа": False,
+                                    "Уметь-планировать": False,
+                                    "Глобальное-мышление": False,
+                                    "Этические-нормы": False,
+                                    "Принимать-решения": False,
+                                    "Ответственность-решение": False,
+                                    "Сильные-стороны": False,
+                                    "Эффективность": False
+        }}
         
         markup = types.ReplyKeyboardMarkup()
         markup.row(types.KeyboardButton("🔙Назад"))
@@ -103,26 +145,8 @@ def user_name(message):
 
     # print(user_form)
 
-skills_dict = {
-        "Мыслить": False,
-        "Коммуницировать": False,
-        "Уметь-рисковать": False,
-        "Быть-гибким": False,
-        "Быть-упорным": False,
-        "Командная-работа": False,
-        "Уметь-планировать": False,
-        "Глобальное-мышление": False,
-        "Этические-нормы": False,
-        "Принимать-решения": False,
-        "Ответственность-решение": False,
-        "Сильные-стороны": False,
-        "Эффективность": False
-    }
-
 @bot.callback_query_handler(func=lambda callback: True)
 def callback_message(callback):
-    global skills_dict
-
     markup = types.InlineKeyboardMarkup()
     
     house = ["east", "west", "north", "south"]
@@ -172,30 +196,32 @@ def callback_message(callback):
     btns = ["Мыслить", "Коммуницировать", "Уметь-рисковать", "Быть-гибким", "Быть-упорным", "Командная-работа", "Уметь-планировать", "Глобальное-мышление", "Этические-нормы", "Принимать-решения", "Ответственность-решение", "Сильные-стороны", "Эффективность"]
     
     callback_text_skills = {
-        "Мыслить": "Мыслить, ",
-        "Коммуницировать": "Коммуницировать, ",
-        "Уметь-рисковать": "Уметь рисковать, ",
-        "Быть-гибким": "Быть гибким, ",
-        "Быть-упорным": "Быть упорным, ",
-        "Командная-работа": "Работать в команде, ",
-        "Уметь-планировать": "Уметь планировать, ",
-        "Глобальное-мышление": "Осознавать важность глобального мышления, ",
-        "Этические-нормы": "Осознавать важность этических норм, ",
-        "Принимать-решения": "Уметь принимать решения, ",
-        "Ответственность-решение": "Нести за отвественность за свои решения, ",
-        "Сильные-стороны": "Оценивать сильные стороны и точки роста, ",
-        "Эффективность": "Верить в собственную эффективность, "
+        "Мыслить": "Мыслить",
+        "Коммуницировать": "Коммуницировать",
+        "Уметь-рисковать": "Уметь рисковать",
+        "Быть-гибким": "Быть гибким",
+        "Быть-упорным": "Быть упорным",
+        "Командная-работа": "Работать в команде",
+        "Уметь-планировать": "Уметь планировать",
+        "Глобальное-мышление": "Осознавать важность глобального мышления",
+        "Этические-нормы": "Осознавать важность этических норм",
+        "Принимать-решения": "Уметь принимать решения",
+        "Ответственность-решение": "Нести за отвественность за свои решения",
+        "Сильные-стороны": "Оценивать сильные стороны и точки роста",
+        "Эффективность": "Верить в собственную эффективность"
     }
     
     if callback.data in btns and callback_text_skills[callback.data] not in user_form[callback.message.chat.id]["skills"]:
-        user_form[callback.message.chat.id]["skills"] += callback_text_skills[callback.data]
+        user_form[callback.message.chat.id]["skills"].append(callback_text_skills[callback.data])
         
-        skills_dict[callback.data] = not skills_dict[callback.data]
+        print(user_form[callback.message.chat.id]["skills"])
+
+        user_form[callback.message.chat.id]["skills_dict"][callback.data] = not user_form[callback.message.chat.id]["skills_dict"][callback.data]
 
         markup = types.InlineKeyboardMarkup()
 
-        for callback_skill, selected in skills_dict.items():
-            skill = callback_text_skills[callback_skill][0:len(callback_text_skills[callback_skill]) - 2]
+        for callback_skill, selected in user_form[callback.message.chat.id]["skills_dict"].items():
+            skill = callback_text_skills[callback_skill]
 
             if selected == True:
                 btn_text = f"✅ {skill}"
@@ -215,27 +241,22 @@ def callback_message(callback):
 
         bot.edit_message_reply_markup(chat_id=callback.message.chat.id, message_id=callback.message.message_id, reply_markup=markup)
         
-        
     elif callback.data in btns and callback_text_skills[callback.data] in user_form[callback.message.chat.id]["skills"]:
-        # for skill in user_form[callback.message.chat.id]["skills"]:
-        #     if callback_text_skills[skill] == callback.data:
-        #         user_form[callback.message.chat.id]["skills"].remove(callback_text_skills[skill])
-
-        # print(list(user_form[callback.message.chat.id]["skills"]))
+        skills_list = user_form[callback.message.chat.id]["skills"]
         
-        # skills_list = user_form[callback.message.chat.id]["skills"].split(', ')
-        # for skill in skills_list:
-        #     if skill == callback.data:
-        #         user_form[callback.message.chat.id]["skills"].remove(skill)
 
+        for skill in skills_list:
+            if skill == callback_text_skills[callback.data]:
+                skills_list.remove(skill)
 
-        # если скажут дописать эту часть то осталось только удалить из user_form[callback.message.chat.id]["skills"] те скилы которые удалили и все на том
-        skills_dict[callback.data] = not skills_dict[callback.data]
+                print(user_form[callback.message.chat.id]["skills"])
+        
+        user_form[callback.message.chat.id]["skills_dict"][callback.data] = not user_form[callback.message.chat.id]["skills_dict"][callback.data]
 
         markup = types.InlineKeyboardMarkup()
 
-        for callback_skill, selected in skills_dict.items():
-            skill = callback_text_skills[callback_skill][0:len(callback_text_skills[callback_skill]) - 2]
+        for callback_skill, selected in user_form[callback.message.chat.id]["skills_dict"].items():
+            skill = callback_text_skills[callback_skill]
 
             if selected == True:
                 btn_text = f"✅ {skill}"
@@ -244,8 +265,15 @@ def callback_message(callback):
 
             markup.add(types.InlineKeyboardButton(btn_text, callback_data=callback_skill))
         
-        print(user_form)
-        
+        if user_form[callback.message.chat.id]["points"] == "15":
+            markup.add(types.InlineKeyboardButton("✅Я готов", callback_data="✅Я готов"))
+
+        if user_form[callback.message.chat.id]["points"] == "10":
+            markup.add(types.InlineKeyboardButton("✅Готов", callback_data="✅Готов"))
+
+        if user_form[callback.message.chat.id]["points"] == "5":
+            markup.add(types.InlineKeyboardButton("✅Готово", callback_data="✅Готово"))
+
         bot.edit_message_reply_markup(chat_id=callback.message.chat.id, message_id=callback.message.message_id, reply_markup=markup)
         
     if callback.data == "✅Готово" and user_form[callback.message.chat.id]["skills"] != "":

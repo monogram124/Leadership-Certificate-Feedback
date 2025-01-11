@@ -34,7 +34,7 @@ class Database:
                 exp VARCHAR(255),
                 points INT,
                 done VARCHAR(255),
-                skills VARCHAR(255),
+                skills VARCHAR(510),
                 `repeat` VARCHAR(255),
                 exactly VARCHAR(255),
                 difficulties VARCHAR(255),
@@ -128,6 +128,13 @@ class Database:
         )
 
         self.cur = self.conn.cursor()
+        res_skills = ""
+        
+        for char in str(user_form[message.chat.id]['skills']):
+            if char != "'" and char != "[" and char != "]":
+                res_skills += char
+                
+        user_form[message.chat.id]['skills'] = str(user_form[message.chat.id]['skills'])
 
         if user_form[message.chat.id]["points"] == "5":
             self.cur.execute('''
@@ -141,7 +148,7 @@ class Database:
                 user_form[message.chat.id]['exp'], 
                 int(user_form[message.chat.id]['points']),
                 user_form[message.chat.id]['done'],
-                user_form[message.chat.id]['skills'][0:len(user_form[message.chat.id]['skills']) - 2], 
+                res_skills, 
                 user_form[message.chat.id]['repeat'], 
                 int(user_form[message.chat.id]['result']),
                 self.timestamp
@@ -161,7 +168,7 @@ class Database:
                 user_form[message.chat.id]['exp'], 
                 int(user_form[message.chat.id]['points']), 
                 user_form[message.chat.id]['done'], 
-                user_form[message.chat.id]['skills'][0:len(user_form[message.chat.id]['skills']) - 2], 
+                res_skills, 
                 user_form[message.chat.id]['exactly'], 
                 user_form[message.chat.id]['difficulties'], 
                 user_form[message.chat.id]['team_work'], 
@@ -183,7 +190,7 @@ class Database:
                 user_form[message.chat.id]['exp'], 
                 int(user_form[message.chat.id]['points']), 
                 user_form[message.chat.id]['done'], 
-                user_form[message.chat.id]['skills'][0:len(user_form[message.chat.id]['skills']) - 2], 
+                res_skills, 
                 user_form[message.chat.id]['exactly'], 
                 user_form[message.chat.id]['difficulties'], 
                 user_form[message.chat.id]['team_work'], 
