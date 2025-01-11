@@ -204,3 +204,4 @@ class Database:
 
         self.cur.close()
         self.conn.close()
+        
