@@ -69,9 +69,9 @@ def start(message):
                                     "efficiency": False
     }}
 
-    db.connect()
-    db.create()
-    db.close()
+    # db.connect()
+    # db.create()
+    # db.close()
 
     markup = types.ReplyKeyboardMarkup()
     btn1 = types.KeyboardButton("✏️Заполнить форму")
