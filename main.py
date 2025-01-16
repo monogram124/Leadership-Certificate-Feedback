@@ -20,6 +20,8 @@ def exporting(message):
 def handle_back(func):
     def wrapper(message, *args, **kwargs):
         if message.text == "🔙Назад":
+            db.close()
+
             markup = types.ReplyKeyboardMarkup()
             btn1 = types.KeyboardButton("✏️Заполнить форму")
             btn2 = types.KeyboardButton("🌐Сайт House System")
@@ -65,7 +67,9 @@ def start(message):
                                     "efficiency": False
     }}
 
-    db.create()
+    # db.connect()
+    # db.create()
+    # db.close()
 
     markup = types.ReplyKeyboardMarkup()
     btn1 = types.KeyboardButton("✏️Заполнить форму")
@@ -82,6 +86,8 @@ def start(message):
 @handle_back
 def on_click(message):
     if message.text == "✏️Заполнить форму":
+        db.connect()
+
         user_form[message.chat.id] = {"skills": [], "skills_dict":{
                                     "think": False,
                                     "communicate": False,
@@ -117,6 +123,8 @@ def on_click(message):
         markup.add(btn1, btn2)
 
         bot.send_message(message.chat.id, "Форма успешно отправлена!", reply_markup=markup)
+        
+        db.close()
     
     if message.text == "🌐Сайт House System":
         bot.send_message(message.chat.id, "https://houses.primakov.school/")
@@ -205,7 +213,6 @@ def callback_message(callback):
     if callback.data in btns and callback_text_skills[callback.data] not in user_form[callback.message.chat.id]["skills"]:
         user_form[callback.message.chat.id]["skills"].append(callback_text_skills[callback.data])
         
-
         user_form[callback.message.chat.id]["skills_dict"][callback.data] = not user_form[callback.message.chat.id]["skills_dict"][callback.data]
 
         markup = types.InlineKeyboardMarkup()
