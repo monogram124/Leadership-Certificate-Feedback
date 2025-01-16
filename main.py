@@ -15,7 +15,9 @@ user_form = {}
 @bot.message_handler(commands=["export"])
 def exporting(message):
     if message.chat.id == int(os.getenv("ADMIN1_ID")) or message.chat.id == int(os.getenv("ADMIN2_ID")):
+        db.connect()
         db.export_into_sheets()
+        db.close()
 
 def handle_back(func):
     def wrapper(message, *args, **kwargs):
@@ -67,9 +69,9 @@ def start(message):
                                     "efficiency": False
     }}
 
-    # db.connect()
-    # db.create()
-    # db.close()
+    db.connect()
+    db.create()
+    db.close()
 
     markup = types.ReplyKeyboardMarkup()
     btn1 = types.KeyboardButton("✏️Заполнить форму")
