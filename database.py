@@ -14,18 +14,20 @@ load_dotenv()
 
 class Database:
     # TODO: сделать закрытие 
+    def __init__(self):
+        self.conn = None
+
     def connect(self):
         try:
-            self.conn = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            passwd=os.getenv("PASS"),
-            port="3306",
-            database="lcfdatabase"
-            )
-            
-            print("Подключение к базе данных успешно!")
-            
+            if self.conn is None or not self.conn.is_connected():
+                self.conn = mysql.connector.connect(
+                    host=os.getenv("HOST"),
+                    user=os.getenv("USER"),
+                    passwd=os.getenv("PASS"),
+                    port=os.getenv("PORT"),
+                    database=os.getenv("DATABASE")
+                )
+                print("Подключение к базе данных успешно!")
             return self.conn
         except mysql.connector.Error as err:
             print(f"Ошибка подключения: {err}")
@@ -33,13 +35,12 @@ class Database:
             return None
 
     def close(self):
-        try:
-            self.conn.close()
-
-            print("Соединение с базой данных закрыто!")
-
-        except mysql.connector.Error as err:
-            print(f"Ошибка закрытия соединения: {err}")
+        if self.conn and self.conn.is_connected():
+            try:
+                self.conn.close()
+                print("Соединение с базой данных закрыто!")
+            except mysql.connector.Error as err:
+                print(f"Ошибка закрытия соединения: {err}")
             
             return None
         
