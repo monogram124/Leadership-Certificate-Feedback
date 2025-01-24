@@ -14,18 +14,13 @@ user_form = {}
 
 @bot.message_handler(commands=["export"])
 def exporting(message):
-    if message.chat.id == int(os.getenv("ADMIN1_ID")) or message.chat.id == int(os.getenv("ADMIN2_ID")):
-        try:
-            db.connect()
-            db.export_into_sheets()
-        finally:
-            db.close()
+    admins = [int(os.getenv("ADMIN1_ID")), int(os.getenv("ADMIN2_ID")), int(os.getenv("ADMIN3_ID"))]
+    if message.chat.id in admins:
+        db.export_into_sheets()
 
 def handle_back(func):
     def wrapper(message, *args, **kwargs):
         if message.text == "🔙Назад":
-            db.close()
-
             markup = types.ReplyKeyboardMarkup()
             btn1 = types.KeyboardButton("✏️Заполнить форму")
             btn2 = types.KeyboardButton("🌐Сайт House System")
@@ -71,7 +66,7 @@ def start(message):
                                     "efficiency": False
     }}
 
-    # db.create()
+    db.create()
 
     markup = types.ReplyKeyboardMarkup()
     btn1 = types.KeyboardButton("✏️Заполнить форму")
@@ -88,8 +83,6 @@ def start(message):
 @handle_back
 def on_click(message):
     if message.text == "✏️Заполнить форму":
-        db.connect()
-
         user_form[message.chat.id] = {"skills": [], "skills_dict":{
                                     "think": False,
                                     "communicate": False,
