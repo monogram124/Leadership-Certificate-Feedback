@@ -13,7 +13,6 @@ import os
 load_dotenv()
 
 class Database:
-    # TODO: сделать закрытие 
     def __init__(self):
         self.config = {
             'host': os.getenv("HOST"),
@@ -52,34 +51,6 @@ class Database:
         except mysql.connector.Error as err:
             print(f"Ошибка создания таблицы: {err}")
 
-
-    # def connect(self):
-    #     try:
-    #         if self.conn is None or not self.conn.is_connected():
-    #             self.conn = mysql.connector.connect(
-    #                 host=os.getenv("HOST"),
-    #                 user=os.getenv("USER"),
-    #                 passwd=os.getenv("PASS"),
-    #                 port=os.getenv("PORT"),
-    #                 database=os.getenv("DATABASE")
-    #             )
-    #             print("Подключение к базе данных успешно!")
-    #         return self.conn
-    #     except mysql.connector.Error as err:
-    #         print(f"Ошибка подключения: {err}")
-            
-    #         return None
-
-    # def close(self):
-    #     if self.conn and self.conn.is_connected():
-    #         try:
-    #             self.conn.close()
-    #             print("Соединение с базой данных закрыто!")
-    #         except mysql.connector.Error as err:
-    #             print(f"Ошибка закрытия соединения: {err}")
-            
-    #         return None
-    
     def export_into_sheets(self):
         try:
             with mysql.connector.connect(**self.config) as conn:
@@ -143,7 +114,7 @@ class Database:
 
     def save_message(self, message, user_form):
         try:
-            with mysql.connector.conn(**self.config) as conn:
+            with mysql.connector.connect(**self.config) as conn:
                 with conn.cursor() as cur:
 
                     self.moscow_tz = pytz.timezone("Europe/Moscow")
@@ -175,8 +146,8 @@ class Database:
                             self.timestamp
                         ))     
 
-                        self.conn.commit() 
-
+                        conn.commit()
+                    
                     elif user_form[message.chat.id]["points"] == "10":
                         cur.execute('''
                             INSERT INTO messages (user_id, username, name, house, exp, points, done, skills, exactly, difficulties, team, result, timestamp)
@@ -197,7 +168,7 @@ class Database:
                             self.timestamp
                         ))
 
-                        self.conn.commit() 
+                        conn.commit() 
 
                     elif user_form[message.chat.id]["points"] == "15":
                         cur.execute('''
@@ -220,7 +191,7 @@ class Database:
                             int(user_form[message.chat.id]['result']),
                             self.timestamp
                         ))
-                        
-                        self.conn.commit() 
+
+                        conn.commit()
         except mysql.connector.Error as err:
             print(f"Ошибка сохранения сообщения: {err}")

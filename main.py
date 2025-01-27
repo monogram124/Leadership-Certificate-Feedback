@@ -17,6 +17,7 @@ def exporting(message):
     admins = [int(os.getenv("ADMIN1_ID")), int(os.getenv("ADMIN2_ID")), int(os.getenv("ADMIN3_ID"))]
     if message.chat.id in admins:
         db.export_into_sheets()
+        print(f"Пользователь {message.user_name} загрузил данные в гугл таблицу")
 
 def handle_back(func):
     def wrapper(message, *args, **kwargs):
@@ -67,6 +68,7 @@ def start(message):
     }}
 
     db.create()
+    print(f"Таблица создана")
 
     markup = types.ReplyKeyboardMarkup()
     btn1 = types.KeyboardButton("✏️Заполнить форму")
@@ -108,6 +110,7 @@ def on_click(message):
 
     if message.text == "📩Отправить":
         db.save_message(message, user_form)
+        print(f"Анкету заполинил {message.chat.id}")
 
         del user_form[message.chat.id]
         
